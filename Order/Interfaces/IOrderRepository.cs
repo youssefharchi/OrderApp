@@ -1,7 +1,12 @@
-﻿namespace OrderApp.Interfaces
+﻿using OrderApp.Model;
+
+namespace OrderApp.Interfaces
 {
     public interface IOrderRepository
     {
-        public ICollection<Model.Order> GetOrders();
+        ICollection<Model.Order> GetOrders();
+        Model.Order GetOrder(int id);
+        bool OrderExists(int id);
+        ICollection<Item> GetItemByOrder(int OrderId);
     }
 }

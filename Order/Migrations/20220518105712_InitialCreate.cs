@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Order.Migrations
+namespace OrderApp.Migrations
 {
     public partial class InitialCreate : Migration
     {

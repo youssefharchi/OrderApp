@@ -17,5 +17,15 @@ namespace OrderApp.Repository
         {
             return _context.Details.OrderBy(d => d.OrderDetailId).ToList();
         }
+
+        public OrderDetail GetOrderDetail(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OrderExists(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

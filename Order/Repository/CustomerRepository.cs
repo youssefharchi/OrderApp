@@ -17,5 +17,26 @@ namespace OrderApp.Repository
         {
             return _context.Customers.OrderBy(c => c.CustomerId).ToList();
         }
+
+        public Customer GetCustomer(int id)
+        {
+            return _context.Customers.FirstOrDefault(c => c.CustomerId == id);
+            
+        }
+
+        public bool CustomerExists(int id)
+        {
+            return _context.Customers.Any(c => c.CustomerId == id);
+        }
+
+        public ICollection<Model.Order> GetGetOrdersByCustomer(int customerId)
+        {
+            return _context.Orders.Where(o => o.CustomerId==customerId).ToList();
+        }
+
+        public ICollection<Model.Order> GetOrdersByCustomer(int customerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

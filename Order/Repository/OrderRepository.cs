@@ -1,5 +1,6 @@
 ﻿using OrderApp.Data;
 using OrderApp.Interfaces;
+using OrderApp.Model;
 
 namespace OrderApp.Repository
 {
@@ -12,9 +13,24 @@ namespace OrderApp.Repository
             _context = context;
         }
 
+        public ICollection<Item> GetItemByOrder(int OrderId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Model.Order GetOrder(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public ICollection<Model.Order> GetOrders()
         {
             return _context.Orders.OrderBy(o => o.OrderId).ToList();
+        }
+
+        public bool OrderExists(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
