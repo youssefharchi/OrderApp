@@ -1,8 +1,8 @@
-﻿namespace Order.Model
+﻿namespace OrderApp.Model
 {
     public class OrderDetail
     {
-        public int DetailId { get; set; }
+        public int OrderDetailId { get; set; }
         public int Quantity { get; set; }
         public string TaxStatus { get; set; }
         public int ItemId { get; set; }
