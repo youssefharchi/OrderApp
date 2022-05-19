@@ -13,14 +13,21 @@ namespace OrderApp.Repository
             _context = context;
         }
 
-        public ICollection<Customer> GetCustomerByOrder(int ItemId)
+        public ICollection<Customer> GetCustomersByItem(int ItemId)
         {
-            throw new NotImplementedException();
+            //look for better ways to get the customers
+            var customers = from customer in _context.Customers
+                            join order in _context.Orders on customer.CustomerId equals order.CustomerId
+                            join detail in _context.Details on order.OrderId equals detail.OrderId
+                            where detail.ItemId == ItemId
+                            select customer;
+            return customers.ToList();
         }
 
         public Item GetItem(int id)
         {
-            throw new NotImplementedException();
+            //look to solve the warning
+            return _context.Items.FirstOrDefault(i => i.ItemId == id);
         }
 
         public ICollection<Item> GetItems()
@@ -30,12 +37,17 @@ namespace OrderApp.Repository
 
         public ICollection<Model.Order> GetOrderByItem(int ItemId)
         {
-            throw new NotImplementedException();
+            //again need better ways to replace this
+            var orders = from order in _context.Orders
+                         join detail in _context.Details on order.OrderId equals detail.OrderId
+                         where detail.ItemId == ItemId
+                         select order;
+            return orders.ToList();
         }
 
         public bool ItemExists(int Id)
         {
-            throw new NotImplementedException();
+            return _context.Items.Any(i => i.ItemId == Id);
         }
     }
 }

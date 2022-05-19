@@ -22,7 +22,7 @@ namespace Order.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Order.Model.Customer", b =>
+            modelBuilder.Entity("OrderApp.Model.Customer", b =>
                 {
                     b.Property<int>("CustomerId")
                         .ValueGeneratedOnAdd()
@@ -31,11 +31,9 @@ namespace Order.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"), 1L, 1);
 
                     b.Property<string>("CustomerAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CustomerId");
@@ -43,7 +41,7 @@ namespace Order.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Order.Model.Item", b =>
+            modelBuilder.Entity("OrderApp.Model.Item", b =>
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
@@ -52,11 +50,9 @@ namespace Order.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"), 1L, 1);
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("ShipWeight")
@@ -67,7 +63,7 @@ namespace Order.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Order.Model.Order", b =>
+            modelBuilder.Entity("OrderApp.Model.Order", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
@@ -82,7 +78,6 @@ namespace Order.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderId");
@@ -92,7 +87,7 @@ namespace Order.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Order.Model.OrderDetail", b =>
+            modelBuilder.Entity("OrderApp.Model.OrderDetail", b =>
                 {
                     b.Property<int>("OrderDetailId")
                         .ValueGeneratedOnAdd()
@@ -122,10 +117,10 @@ namespace Order.Migrations
                     b.ToTable("Details");
                 });
 
-            modelBuilder.Entity("Order.Model.Order", b =>
+            modelBuilder.Entity("OrderApp.Model.Order", b =>
                 {
-                    b.HasOne("Order.Model.Customer", "Customer")
-                        .WithMany()
+                    b.HasOne("OrderApp.Model.Customer", "Customer")
+                        .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -133,22 +128,27 @@ namespace Order.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Order.Model.OrderDetail", b =>
+            modelBuilder.Entity("OrderApp.Model.OrderDetail", b =>
                 {
-                    b.HasOne("Order.Model.Item", "item")
+                    b.HasOne("OrderApp.Model.Item", "item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Order.Model.Order", null)
+                    b.HasOne("OrderApp.Model.Order", null)
                         .WithMany("Details")
                         .HasForeignKey("OrderId");
 
                     b.Navigation("item");
                 });
 
-            modelBuilder.Entity("Order.Model.Order", b =>
+            modelBuilder.Entity("OrderApp.Model.Customer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("OrderApp.Model.Order", b =>
                 {
                     b.Navigation("Details");
                 });

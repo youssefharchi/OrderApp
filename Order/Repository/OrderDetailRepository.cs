@@ -13,19 +13,15 @@ namespace OrderApp.Repository
             _context = context;
         }
 
-        public ICollection<OrderDetail> GetOrderDetail()
-        {
-            return _context.Details.OrderBy(d => d.OrderDetailId).ToList();
-        }
-
         public OrderDetail GetOrderDetail(int id)
         {
-            throw new NotImplementedException();
+            //solve warning
+            return _context.Details.FirstOrDefault(d => d.OrderDetailId == id);
         }
 
         public bool OrderExists(int id)
         {
-            throw new NotImplementedException();
+            return _context.Details.Any(d => d.OrderDetailId == id);
         }
     }
 }
