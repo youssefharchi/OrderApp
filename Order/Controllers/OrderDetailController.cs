@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using OrderApp.Dto;
 using OrderApp.Interfaces;
 using OrderApp.Model;
 
@@ -9,30 +11,33 @@ namespace OrderApp.Controllers
     public class OrderDetailController : Controller
     {
         private readonly IOrderDetailRepository _orderDetailRepository;
+        private readonly IMapper _mapper;
 
-        public OrderDetailController(IOrderDetailRepository orderDetailRepository)
+        public OrderDetailController(IOrderDetailRepository orderDetailRepository, IMapper mapper)
         {
             _orderDetailRepository = orderDetailRepository;
+            _mapper = mapper;
         }
 
         //get order detail by id
 
-        [HttpGet]
+        [HttpGet("/GetDetail/{DetailId}")]
         [ProducesResponseType(200, Type = typeof(OrderDetail))]
-        public IActionResult GetDetail(int id)
+        public IActionResult GetDetail(int DetailId)
         {
-            var detail = _orderDetailRepository.GetOrderDetail(id);
+            //var detail = _orderDetailRepository.GetOrderDetail(DetailId);
+            var detail = _mapper.Map<OrderDetailDto>(_orderDetailRepository.GetOrderDetail(DetailId));
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
             return Ok(detail);
         }
 
         //check if order detail exits
 
-        [HttpGet("/CheckDetail")]
+        [HttpGet("/CheckDetail/{DetailId}")]
         [ProducesResponseType(200, Type = typeof(bool))]
-        public IActionResult CheckDetail(int id)
+        public IActionResult CheckDetail(int DetailId)
         {
-            var check = _orderDetailRepository.OrderExists(id);
+            var check = _orderDetailRepository.OrderExists(DetailId);
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
             return Ok(check);
         }
