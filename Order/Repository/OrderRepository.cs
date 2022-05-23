@@ -48,5 +48,26 @@ namespace OrderApp.Repository
         {
             return _context.Orders.Any(o => o.OrderId == id);
         }
+
+        public bool CreateOrder(int CustomerId, Model.Order order)
+        {
+            //add customer to order
+            order.CustomerId = CustomerId;
+            _context.Add(order);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var seved = _context.SaveChanges();
+            return seved > 0;
+        }
+
+        public bool UpdateOrder(int CustomerId, Model.Order order)
+        {
+            order.CustomerId =CustomerId;
+            _context.Update(order);
+            return Save();
+        }
     }
 }

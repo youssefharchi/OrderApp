@@ -32,5 +32,23 @@ namespace OrderApp.Repository
         {
             return _context.Orders.Where(o => o.CustomerId == customerId).ToList();
         }
+
+        public bool CreateCustomer(Customer customer)
+        {
+            _context.Add(customer);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var seved = _context.SaveChanges();
+            return seved > 0;
+        }
+
+        public bool UpdateCustomer(Customer customer)
+        {
+            _context.Update(customer);
+            return Save();
+        }
     }
 }

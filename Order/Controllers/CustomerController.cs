@@ -65,5 +65,57 @@ namespace OrderApp.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
             return Ok(exists);
         }
+
+        //post customer
+
+        [HttpPost("/postCustomer")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateCustomer([FromBody] CustomerDto customerCreate)
+        {
+            if (customerCreate == null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var customerMap = _mapper.Map<Customer>(customerCreate);
+
+            if (!_customerRepository.CreateCustomer(customerMap))
+            {
+                ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
+        }
+
+        //put CUstomer
+
+        [HttpPut("/PutCustomer/{customerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCustomer([FromQuery]int customerId , [FromBody]CustomerDto updatedCustomer)
+        {
+            if (updatedCustomer == null)
+                return BadRequest(ModelState);
+
+            if(customerId != updatedCustomer.CustomerId)
+                return BadRequest(ModelState);
+            if (!_customerRepository.CustomerExists(customerId))
+                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var customerMap = _mapper.Map<Customer>(updatedCustomer);
+            if (!_customerRepository.UpdateCustomer(customerMap))
+            {
+                ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
     }
 }

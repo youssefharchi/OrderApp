@@ -76,5 +76,50 @@ namespace OrderApp.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
             return Ok(details);
         }
+
+        //post order
+        [HttpPost("/PostOrder")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateOrder( [FromQuery] int customerId, [FromBody] OrderDto orderCreate)
+         {
+             if(orderCreate == null) 
+                return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var order = _mapper.Map<Model.Order>(orderCreate);
+            if(!_orderRepository.CreateOrder(customerId, order))
+            {
+                ModelState.AddModelError("", "somthing went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Successfully created");
+        }
+
+        //put order
+        [HttpPut("/PutOrder/{orderId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult PutOrder([FromQuery] int orderId ,[FromQuery] int CustomerId, OrderDto UpdatedOrder)
+        {
+            if (UpdatedOrder == null)
+                return BadRequest(ModelState);
+            if (orderId != UpdatedOrder.OrderId)
+                return BadRequest(ModelState);
+            if (!_orderRepository.OrderExists(orderId))
+                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var orderMap = _mapper.Map<Model.Order>(UpdatedOrder);
+
+            if (!_orderRepository.UpdateOrder(CustomerId,orderMap))
+            {
+                ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }

@@ -77,5 +77,64 @@ namespace OrderApp.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
             return Ok(check);
         }
+
+        //post item
+        [HttpPost("/postItem")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult Createitem([FromBody] ItemDto itemcreate)
+        {
+            if (itemcreate == null)
+                return BadRequest(ModelState);
+
+            var item = _itemRepository.GetItems()
+                .Where(i => i.ItemName.Trim().ToUpper() == itemcreate.ItemName.TrimEnd().ToUpper())
+                .FirstOrDefault();
+
+            if (item != null)
+            {
+                ModelState.AddModelError("", "Item alrady exists");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemMap = _mapper.Map<Item>(itemcreate);
+            if (!_itemRepository.CreateItem(itemMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving ");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
+        }
+
+
+        // put item 
+        [HttpPut("/PutItem/{ItemId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCustomer([FromQuery] int ItemId, [FromBody] ItemDto updetedItem)
+        {
+            if (updetedItem == null)
+                return BadRequest(ModelState);
+
+            if (ItemId != updetedItem.ItemId)
+                return BadRequest(ModelState);
+            if (!_itemRepository.ItemExists(ItemId))
+                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ItemMap = _mapper.Map<Item>(updetedItem);
+            if (!_itemRepository.UpdateItem(ItemMap))
+            {
+                ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }

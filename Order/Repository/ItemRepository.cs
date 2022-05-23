@@ -49,5 +49,22 @@ namespace OrderApp.Repository
         {
             return _context.Items.Any(i => i.ItemId == Id);
         }
+
+        public bool CreateItem(Item item)
+        {
+            _context.Add(item);
+            return Save();
+        }
+        public bool UpdateItem(Item item)
+        {
+            _context.Update(item);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var seved = _context.SaveChanges();
+            return seved > 0;
+        }
     }
 }

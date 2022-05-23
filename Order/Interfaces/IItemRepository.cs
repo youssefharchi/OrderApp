@@ -12,6 +12,11 @@ namespace OrderApp.Interfaces
 
         ICollection<Customer> GetCustomersByItem(int ItemId);
 
+        bool CreateItem(Item item);
+
+        bool UpdateItem(Item item);
+        bool Save();
+
         bool ItemExists(int Id);
     }
 }

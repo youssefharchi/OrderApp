@@ -10,6 +10,11 @@ namespace OrderApp.Interfaces
 
         ICollection<Model.Order> GetOrdersByCustomer(int customerId);
 
+        bool CreateCustomer(Customer customer);
+        bool UpdateCustomer(Customer customer);
+
+        bool Save();
+
         bool CustomerExists(int id);
     }
 }

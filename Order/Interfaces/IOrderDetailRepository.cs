@@ -6,6 +6,13 @@ namespace OrderApp.Interfaces
     {
         OrderDetail GetOrderDetail(int id);
 
-        bool OrderExists(int id);
+        ICollection<OrderDetail> GetAllDetails();
+
+        bool CreateDetail(OrderDetail orderDetail, int itemId, int orderId);
+        bool UpdateDetail(OrderDetail orderDetail, int itemId, int orderId);
+
+        bool Save();
+
+        bool OrderDetailExists(int id);
     }
 }
