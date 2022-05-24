@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderApp.Data;
 
 #nullable disable
 
-namespace Order.Migrations
+namespace OrderApp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220524125018_thirdMigration")]
+    partial class thirdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +123,7 @@ namespace Order.Migrations
                     b.HasOne("OrderApp.Model.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -130,7 +132,7 @@ namespace Order.Migrations
             modelBuilder.Entity("OrderApp.Model.OrderDetail", b =>
                 {
                     b.HasOne("OrderApp.Model.Item", "item")
-                        .WithMany("orderDetails")
+                        .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -149,11 +151,6 @@ namespace Order.Migrations
             modelBuilder.Entity("OrderApp.Model.Customer", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("OrderApp.Model.Item", b =>
-                {
-                    b.Navigation("orderDetails");
                 });
 
             modelBuilder.Entity("OrderApp.Model.Order", b =>

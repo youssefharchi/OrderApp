@@ -14,7 +14,7 @@ namespace OrderApp.Controllers
 
         private readonly IMapper _mapper;
 
-        public OrderDetailController(IOrderDetailRepository orderDetailRepository, IItemRepository itemRepository, IOrderRepository orderRepository, IMapper mapper)
+        public OrderDetailController(IOrderDetailRepository orderDetailRepository, IMapper mapper)
         {
             _orderDetailRepository = orderDetailRepository;
             _mapper = mapper;
@@ -26,7 +26,7 @@ namespace OrderApp.Controllers
         public IActionResult GetOrders()
         {
             var details = _mapper.Map<List<OrderDetailDto>>(_orderDetailRepository.GetAllDetails());
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(details);
         }
 
@@ -38,7 +38,7 @@ namespace OrderApp.Controllers
         {
             //var detail = _orderDetailRepository.GetOrderDetail(DetailId);
             var detail = _mapper.Map<OrderDetailDto>(_orderDetailRepository.GetOrderDetail(DetailId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(detail);
         }
 
@@ -49,7 +49,7 @@ namespace OrderApp.Controllers
         public IActionResult CheckDetail(int DetailId)
         {
             var check = _orderDetailRepository.OrderDetailExists(DetailId);
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(check);
         }
 
@@ -60,8 +60,6 @@ namespace OrderApp.Controllers
         public IActionResult CreateDetail([FromQuery] int itemId, [FromQuery] int orderId, [FromBody] OrderDetailDto orderDetailCreate)
         {
             if (orderDetailCreate == null)
-                return BadRequest(ModelState);
-            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var detailMap = _mapper.Map<OrderDetail>(orderDetailCreate);
@@ -79,7 +77,7 @@ namespace OrderApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCustomer([FromQuery] int DetailId ,[FromQuery] int OrderId,[FromQuery] int ItemId, [FromBody] OrderDetailDto updatedDetail)
+        public IActionResult UpdateCustomer([FromQuery] int DetailId, [FromQuery] int OrderId, [FromQuery] int ItemId, [FromBody] OrderDetailDto updatedDetail)
         {
             if (updatedDetail == null)
                 return BadRequest(ModelState);
@@ -88,13 +86,29 @@ namespace OrderApp.Controllers
                 return BadRequest(ModelState);
             if (!_orderDetailRepository.OrderDetailExists(DetailId))
                 return NotFound();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var DetailMap = _mapper.Map<OrderDetail>(updatedDetail);
-            if (!_orderDetailRepository.UpdateDetail(DetailMap, ItemId,OrderId))
+            if (!_orderDetailRepository.UpdateDetail(DetailMap, ItemId, OrderId))
             {
                 ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("/DeleteOrderDetail/{OrderDetailId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteOrderDetail(int OrderDetailId)
+        {
+            if (!_orderDetailRepository.OrderDetailExists(OrderDetailId))
+                return NotFound();
+            var OrderDetailToDelete = _orderDetailRepository.GetOrderDetail(OrderDetailId);
+
+            if (!_orderDetailRepository.DeleteDetail(OrderDetailToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting customer");
                 return StatusCode(500, ModelState);
             }
             return NoContent();

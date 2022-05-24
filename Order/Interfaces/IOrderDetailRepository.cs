@@ -9,7 +9,10 @@ namespace OrderApp.Interfaces
         ICollection<OrderDetail> GetAllDetails();
 
         bool CreateDetail(OrderDetail orderDetail, int itemId, int orderId);
+
         bool UpdateDetail(OrderDetail orderDetail, int itemId, int orderId);
+
+        bool DeleteDetail(OrderDetail detail);
 
         bool Save();
 

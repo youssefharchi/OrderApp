@@ -13,7 +13,10 @@ namespace OrderApp.Interfaces
         bool OrderExists(int id);
 
         bool CreateOrder(int CustomerId, Model.Order order);
+
         bool UpdateOrder(int CustomerId, Model.Order order);
+
+        bool DeleteOrder(Model.Order Order);
 
         bool Save();
 

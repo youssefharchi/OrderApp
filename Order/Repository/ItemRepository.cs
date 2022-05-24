@@ -55,6 +55,7 @@ namespace OrderApp.Repository
             _context.Add(item);
             return Save();
         }
+
         public bool UpdateItem(Item item)
         {
             _context.Update(item);
@@ -65,6 +66,12 @@ namespace OrderApp.Repository
         {
             var seved = _context.SaveChanges();
             return seved > 0;
+        }
+
+        public bool DeleteItem(Item Item)
+        {
+            _context.Items.Remove(Item);
+            return Save();
         }
     }
 }

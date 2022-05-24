@@ -27,7 +27,7 @@ namespace OrderApp.Controllers
         {
             // var orders = _orderRepository.GetOrders();
             var orders = _mapper.Map<List<OrderDto>>(_orderRepository.GetOrders());
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(orders);
         }
 
@@ -39,7 +39,7 @@ namespace OrderApp.Controllers
         {
             //var order = _orderRepository.GetOrder(OrderId);
             var order = _mapper.Map<OrderDto>(_orderRepository.GetOrder(OrderId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(order);
         }
 
@@ -51,7 +51,7 @@ namespace OrderApp.Controllers
         {
             //var items = _orderRepository.GetItemByOrder(OrderId);
             var items = _mapper.Map<List<ItemDto>>(_orderRepository.GetItemByOrder(OrderId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(items);
         }
 
@@ -62,7 +62,7 @@ namespace OrderApp.Controllers
         public IActionResult CheckOrder(int OrderId)
         {
             var check = _orderRepository.OrderExists(OrderId);
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(check);
         }
 
@@ -73,7 +73,7 @@ namespace OrderApp.Controllers
         {
             //var details = _orderRepository.GetOrderDetails(OrderId);
             var details = _mapper.Map<List<OrderDetailDto>>(_orderRepository.GetOrderDetails(OrderId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(details);
         }
 
@@ -81,14 +81,13 @@ namespace OrderApp.Controllers
         [HttpPost("/PostOrder")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateOrder( [FromQuery] int customerId, [FromBody] OrderDto orderCreate)
-         {
-             if(orderCreate == null) 
+        public IActionResult CreateOrder([FromQuery] int customerId, [FromBody] OrderDto orderCreate)
+        {
+            if (orderCreate == null)
                 return BadRequest(ModelState);
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+
             var order = _mapper.Map<Model.Order>(orderCreate);
-            if(!_orderRepository.CreateOrder(customerId, order))
+            if (!_orderRepository.CreateOrder(customerId, order))
             {
                 ModelState.AddModelError("", "somthing went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -101,7 +100,7 @@ namespace OrderApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult PutOrder([FromQuery] int orderId ,[FromQuery] int CustomerId, OrderDto UpdatedOrder)
+        public IActionResult PutOrder([FromQuery] int orderId, [FromQuery] int CustomerId, OrderDto UpdatedOrder)
         {
             if (UpdatedOrder == null)
                 return BadRequest(ModelState);
@@ -109,14 +108,30 @@ namespace OrderApp.Controllers
                 return BadRequest(ModelState);
             if (!_orderRepository.OrderExists(orderId))
                 return NotFound();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var orderMap = _mapper.Map<Model.Order>(UpdatedOrder);
 
-            if (!_orderRepository.UpdateOrder(CustomerId,orderMap))
+            if (!_orderRepository.UpdateOrder(CustomerId, orderMap))
             {
                 ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("/DeleteOrder/{OrderId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteOrder(int OrderId)
+        {
+            if (!_orderRepository.OrderExists(OrderId))
+                return NotFound();
+            var OrderToDelete = _orderRepository.GetOrder(OrderId);
+
+            if (!_orderRepository.DeleteOrder(OrderToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting customer");
                 return StatusCode(500, ModelState);
             }
             return NoContent();

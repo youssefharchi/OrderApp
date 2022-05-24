@@ -6,6 +6,6 @@ public class Order
     public DateTime Created { get; set; }
     public string? Status { get; set; }
     public int CustomerId { get; set; }
-    public Customer? Customer { get; set; }
-    public ICollection<OrderDetail>? Details { get; set; }
+    public Customer Customer { get; set; } = new();
+    public ICollection<OrderDetail>? Details { get; set; } = new List<OrderDetail>();
 }

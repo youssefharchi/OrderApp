@@ -7,14 +7,10 @@ namespace OrderApp.Repository
     public class OrderDetailRepository : IOrderDetailRepository
     {
         private readonly DataContext _context;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IItemRepository _itemRepository;
 
-        public OrderDetailRepository(DataContext context, IItemRepository itemRepository, IOrderRepository orderRepository)
+        public OrderDetailRepository(DataContext context)
         {
             _context = context;
-            _orderRepository = orderRepository;
-            _itemRepository = itemRepository;
         }
 
         public OrderDetail GetOrderDetail(int id)
@@ -52,6 +48,12 @@ namespace OrderApp.Repository
             orderDetail.OrderId = orderId;
             orderDetail.ItemId = itemId;
             _context.Update(orderDetail);
+            return Save();
+        }
+
+        public bool DeleteDetail(OrderDetail detail)
+        {
+            _context.Remove(detail);
             return Save();
         }
     }

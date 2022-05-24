@@ -41,13 +41,20 @@ namespace OrderApp.Repository
 
         public bool Save()
         {
-            var seved = _context.SaveChanges();
-            return seved > 0;
+            var saved = _context.SaveChanges();
+            return saved > 0;
         }
 
         public bool UpdateCustomer(Customer customer)
         {
             _context.Update(customer);
+            return Save();
+        }
+
+        public bool DeleteCustomer(Customer customer)
+        {
+            _context.Customers.Remove(customer);
+
             return Save();
         }
     }

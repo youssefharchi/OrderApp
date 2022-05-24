@@ -27,7 +27,7 @@ namespace OrderApp.Controllers
         {
             //var customers = _customerRepository.GetCustomers();
             var customers = _mapper.Map<List<CustomerDto>>(_customerRepository.GetCustomers());
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(customers);
         }
 
@@ -39,7 +39,7 @@ namespace OrderApp.Controllers
         {
             //var orders = _customerRepository.GetOrdersByCustomer(CustomerId);
             var orders = _mapper.Map<List<OrderDto>>(_customerRepository.GetOrdersByCustomer(CustomerId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(orders);
         }
 
@@ -49,9 +49,8 @@ namespace OrderApp.Controllers
         [ProducesResponseType(200, Type = typeof(Customer))]
         public IActionResult GetCustomer(int CustomerId)
         {
-            //var customer = _customerRepository.GetCustomer(CustomerId);
             var customer = _mapper.Map<CustomerDto>(_customerRepository.GetCustomer(CustomerId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(customer);
         }
 
@@ -62,7 +61,7 @@ namespace OrderApp.Controllers
         public IActionResult CustomerExists(int CustomerId)
         {
             var exists = _customerRepository.CustomerExists(CustomerId);
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(exists);
         }
 
@@ -74,9 +73,6 @@ namespace OrderApp.Controllers
         public IActionResult CreateCustomer([FromBody] CustomerDto customerCreate)
         {
             if (customerCreate == null)
-                return BadRequest(ModelState);
-
-            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var customerMap = _mapper.Map<Customer>(customerCreate);
@@ -96,17 +92,15 @@ namespace OrderApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCustomer([FromQuery]int customerId , [FromBody]CustomerDto updatedCustomer)
+        public IActionResult UpdateCustomer([FromQuery] int customerId, [FromBody] CustomerDto updatedCustomer)
         {
             if (updatedCustomer == null)
                 return BadRequest(ModelState);
 
-            if(customerId != updatedCustomer.CustomerId)
+            if (customerId != updatedCustomer.CustomerId)
                 return BadRequest(ModelState);
             if (!_customerRepository.CustomerExists(customerId))
                 return NotFound();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var customerMap = _mapper.Map<Customer>(updatedCustomer);
             if (!_customerRepository.UpdateCustomer(customerMap))
@@ -117,5 +111,22 @@ namespace OrderApp.Controllers
             return NoContent();
         }
 
+        [HttpDelete("/DeleteCustomer/{CustomerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCustomer(int CustomerId)
+        {
+            if (!_customerRepository.CustomerExists(CustomerId))
+                return NotFound();
+            var customerToDelete = _customerRepository.GetCustomer(CustomerId);
+
+            if (!_customerRepository.DeleteCustomer(customerToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting customer");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }

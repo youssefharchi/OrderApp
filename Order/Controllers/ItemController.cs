@@ -27,7 +27,7 @@ namespace OrderApp.Controllers
         {
             //var items = _itemRepository.GetItems();
             var items = _mapper.Map<List<ItemDto>>(_itemRepository.GetItems());
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(items);
         }
 
@@ -39,7 +39,7 @@ namespace OrderApp.Controllers
         {
             //var customers = _itemRepository.GetCustomersByItem(ItemId);
             var customers = _mapper.Map<List<CustomerDto>>(_itemRepository.GetCustomersByItem(ItemId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(customers);
         }
 
@@ -51,7 +51,7 @@ namespace OrderApp.Controllers
         {
             //var item = _itemRepository.GetItem(ItemId);
             var item = _mapper.Map<ItemDto>(_itemRepository.GetItem(ItemId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(item);
         }
 
@@ -63,7 +63,7 @@ namespace OrderApp.Controllers
         {
             //var orders = _itemRepository.GetOrderByItem(ItemId);
             var orders = _mapper.Map<List<Model.Order>>(_itemRepository.GetOrderByItem(ItemId));
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(orders);
         }
 
@@ -74,7 +74,7 @@ namespace OrderApp.Controllers
         public IActionResult CheckItem(int ItemId)
         {
             var check = _itemRepository.ItemExists(ItemId);
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             return Ok(check);
         }
 
@@ -97,9 +97,6 @@ namespace OrderApp.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var itemMap = _mapper.Map<Item>(itemcreate);
             if (!_itemRepository.CreateItem(itemMap))
             {
@@ -110,8 +107,7 @@ namespace OrderApp.Controllers
             return Ok("Successfully created");
         }
 
-
-        // put item 
+        // put item
         [HttpPut("/PutItem/{ItemId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -125,13 +121,29 @@ namespace OrderApp.Controllers
                 return BadRequest(ModelState);
             if (!_itemRepository.ItemExists(ItemId))
                 return NotFound();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var ItemMap = _mapper.Map<Item>(updetedItem);
             if (!_itemRepository.UpdateItem(ItemMap))
             {
                 ModelState.AddModelError("", "something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("/DeleteItem/{ItemId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteItem(int ItemId)
+        {
+            if (!_itemRepository.ItemExists(ItemId))
+                return NotFound();
+            var ItemToDelete = _itemRepository.GetItem(ItemId);
+
+            if (!_itemRepository.DeleteItem(ItemToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting customer");
                 return StatusCode(500, ModelState);
             }
             return NoContent();

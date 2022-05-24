@@ -65,8 +65,14 @@ namespace OrderApp.Repository
 
         public bool UpdateOrder(int CustomerId, Model.Order order)
         {
-            order.CustomerId =CustomerId;
+            order.CustomerId = CustomerId;
             _context.Update(order);
+            return Save();
+        }
+
+        public bool DeleteOrder(Model.Order Order)
+        {
+            _context.Orders.Remove(Order);
             return Save();
         }
     }
